@@ -154,7 +154,7 @@ public class MiniTools {
 
                     }
                 }catch (Exception e){
-                    Log.e(e.getMessage());
+                   
                 }
 
             }
