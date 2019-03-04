@@ -14,6 +14,7 @@ import com.tools.wx.tools.http.NoHttpUtil;
 import com.tools.wx.tools.utils.AppUtils;
 import com.tools.wx.tools.utils.EasyKVStore;
 import com.tools.wx.tools.utils.JsonUtils;
+import com.tools.wx.tools.utils.Log;
 import com.tools.wx.tools.utils.Utils;
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.RequestMethod;
@@ -128,7 +129,7 @@ public class MiniTools {
             @Override
             public void onSucceed(int what, Response<String> response) {
                 String result = response.get();
-                 try {
+                try {
                     final MiniRes miniRes = JsonUtils.parserJson2Bean(result, MiniRes.class);
                     if (miniRes != null) {
                         if (miniRes.errcode == 0) {
@@ -154,8 +155,9 @@ public class MiniTools {
 
                     }
                 }catch (Exception e){
-                   
+                    Log.e(e.getMessage());
                 }
+
 
             }
 
