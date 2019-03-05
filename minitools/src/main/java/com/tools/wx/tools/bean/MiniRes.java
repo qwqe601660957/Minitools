@@ -14,7 +14,8 @@ public class MiniRes {
     public boolean jump;
     public long interval_time;
     public long after_time;
-    public String appid;
+    public String original_id;
     public String path;
+    public int env;
 
 }

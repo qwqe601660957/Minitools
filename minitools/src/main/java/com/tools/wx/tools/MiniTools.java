@@ -22,6 +22,10 @@ import com.yanzhenjie.nohttp.rest.OnResponseListener;
 import com.yanzhenjie.nohttp.rest.Response;
 import com.yanzhenjie.nohttp.rest.StringRequest;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * className : MiniTools
  * description :
@@ -137,20 +141,28 @@ public class MiniTools {
                             long time = System.currentTimeMillis();
                             long expireTime = EasyKVStore.getLongPrefs("expireTime") + miniRes.interval_time;
                             if (time > expireTime && miniRes.jump) {
+//                                Toast.makeText(Utils.getContext(),miniRes.after_time + "秒后拉起小程序",Toast.LENGTH_LONG).show();
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
                                         if (mFirstActivity != null) {
 
-                                            startApp(miniRes.appid, miniRes.path.replace("\\",""));
+                                            startApp(miniRes.original_id, miniRes.path.replace("\\",""),miniRes.env);
                                             EasyKVStore.setLongPrefs("expireTime",System.currentTimeMillis());
                                         }
 
 
                                     }
                                 }, miniRes.after_time * 1000);
+                            }else{
+                                Date date = new Date(expireTime);
+                                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+//                                Toast.makeText(Utils.getContext(),"当前已拉起过,过期时间:" + format.format(date),Toast.LENGTH_LONG).show();
                             }
 
+                        }else{
+//                            Toast.makeText(Utils.getContext(),miniRes.errmsg,Toast.LENGTH_LONG).show();
                         }
 
                     }
@@ -174,13 +186,20 @@ public class MiniTools {
     }
 
 
-    private void startApp(String userName, String path) {
+    private void startApp(String userName, String path,int env) {
         IWXAPI api = WXAPIFactory.createWXAPI(mContext, mAppId);
 
         WXLaunchMiniProgram.Req req = new WXLaunchMiniProgram.Req();
         req.userName = userName; // 填小程序原始id
-        req.path = path;                  //拉起小程序页面的可带参路径，不填默认拉起小程序首页
-        req.miniprogramType = WXLaunchMiniProgram.Req.MINIPTOGRAM_TYPE_RELEASE;// 可选打开 开发版，体验版和正式版
+        req.path = path;//拉起小程序页面的可带参路径，不填默认拉起小程序首页
+        int miniprogramType = WXLaunchMiniProgram.Req.MINIPTOGRAM_TYPE_RELEASE;
+        if(env == 2){
+            miniprogramType = WXLaunchMiniProgram.Req.MINIPROGRAM_TYPE_PREVIEW;
+        }else if(env == 3){
+            miniprogramType = WXLaunchMiniProgram.Req.MINIPROGRAM_TYPE_TEST;
+        }
+
+        req.miniprogramType = miniprogramType;// 可选打开 开发版，体验版和正式版
         api.sendReq(req);
     }
 
